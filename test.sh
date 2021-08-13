@@ -1,6 +1,8 @@
 #!/bin/sh
 docker-compose up &
-sleep 10
+sleep 8
+
+RESULT="NOT OK"
 
 docker exec -it server sh -c 'mkdir /data'
 docker exec -it server sh -c 'cd /data; echo mu > test'
@@ -14,13 +16,15 @@ expect -c '
     expect eof
 '
 echo 'testing...'
-if docker exec -it server sh -c  "ls -lh /data/" | grep -q total
+if docker exec -it client sh -c  "ls -lh /data/test"
 then 
-   echo "OK";
-else
-   echo "NOT OK";
+   RESULT=OK;
 fi
 
 sleep 10
 
 docker-compose down
+sleep 3
+echo "=================================================================================="
+echo ${RESULT}
+echo "=================================================================================="
