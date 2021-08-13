@@ -1,0 +1,29 @@
+# docker-compose.yml
+version: "3.1"
+services:
+  server:
+    image: eeacms/rsync:latest
+    container_name: server
+    depends_on: 
+      - client
+    env_file: .env
+    ports:
+      - "2222:22"
+    command: server
+
+  client:
+    image: eeacms/rsync:latest
+    container_name: client
+    volumes:
+      - ./my_ssh/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub
+      - ./my_ssh/.ssh/id_rsa:/root/.ssh/id_rsa
+    command: client
+
+
+volumes:
+  client_keys:
+    external: true
+
+# docker volume create client_keys
+# docker container run --name=tmp --mount source=client_keys,target=/root/.ssh eeacms/rsync:latest client
+
